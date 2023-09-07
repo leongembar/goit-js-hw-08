@@ -1,9 +1,7 @@
-
 import throttle from 'lodash.throttle';
 
 const LOCAL_STORAGE_KEY = "feedback-form-state";
 
-const localItem = new Object();
 
 
 const refs = {
@@ -12,23 +10,25 @@ const refs = {
     textarea: document.querySelector('textarea'),
 }
 
-populateStorage(localItem);
+let localItem;
+
+populateStorage();
+
 
 refs.form.addEventListener('submit', onFormSubmit);
 refs.input.addEventListener('input', throttle(onInput, 500));
 refs.textarea.addEventListener('input', throttle(onTextareaInput, 500));
 
-
-
 function onFormSubmit(e){
     e.preventDefault();
     localStorage.clear(); 
     console.log(localItem);
+    localItem = {};
     e.currentTarget.reset();
 }
 
 function  onInput(e){
- const emailStorage = e.currentTarget.value;
+ const emailStorage = e.target.value;
 
  localItem.email = emailStorage;
 
@@ -36,7 +36,7 @@ function  onInput(e){
 }
 
 function onTextareaInput(e){
-const messageStorage = e.currentTarget.value;
+const messageStorage = e.target.value;
 
 localItem.message = messageStorage;
 
@@ -44,7 +44,8 @@ localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(localItem));
 }
 
 function populateStorage(){
-    localItem = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
-    refs.input.value = localItem.email;
-    refs.textarea.value = localItem.message;
+
+    localItem = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || {};
+    refs.input.value = localItem.email || '' ;
+    refs.textarea.value = localItem.message || '';
 }
